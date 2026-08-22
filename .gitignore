@@ -36,6 +36,13 @@ logs/
 server/public/uploads/
 uploads/
 
+# Python Cache & Bot State
+__pycache__/
+*.pyc
+bot/__pycache__/
+bot/admin_chats.json
+bot/chat_state.json
+
 # IDE & OS files
 .vscode/
 .idea/

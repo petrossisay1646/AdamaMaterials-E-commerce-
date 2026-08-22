@@ -1,0 +1,94 @@
+/* Google Fonts — must come before @import tailwindcss */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  /* Primary palette — deep indigo */
+  --color-primary-50: oklch(0.97 0.01 270);
+  --color-primary-100: oklch(0.93 0.03 270);
+  --color-primary-200: oklch(0.86 0.07 270);
+  --color-primary-300: oklch(0.77 0.12 270);
+  --color-primary-400: oklch(0.66 0.18 270);
+  --color-primary-500: oklch(0.55 0.24 270);
+  --color-primary-600: oklch(0.47 0.26 270);
+  --color-primary-700: oklch(0.40 0.24 270);
+  --color-primary-800: oklch(0.33 0.20 270);
+  --color-primary-900: oklch(0.26 0.16 270);
+  --color-primary-950: oklch(0.18 0.12 270);
+
+  /* Accent palette — warm amber-gold */
+  --color-accent-50: oklch(0.98 0.02 85);
+  --color-accent-100: oklch(0.95 0.06 85);
+  --color-accent-200: oklch(0.90 0.12 85);
+  --color-accent-300: oklch(0.84 0.18 85);
+  --color-accent-400: oklch(0.78 0.24 85);
+  --color-accent-500: oklch(0.72 0.28 85);
+  --color-accent-600: oklch(0.65 0.25 85);
+  --color-accent-700: oklch(0.56 0.20 85);
+
+  /* Font family */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+
+@layer base {
+  body {
+    background-color: var(--color-slate-50, #f8fafc);
+    color: var(--color-slate-900, #0f172a);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+}
+
+/* Custom scrollbar for premium feel */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Glassmorphism utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.dark-glass {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, oklch(0.47 0.26 270), oklch(0.65 0.25 85));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
