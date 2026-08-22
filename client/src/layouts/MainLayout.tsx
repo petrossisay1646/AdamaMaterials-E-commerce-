@@ -271,14 +271,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               className="fixed right-0 top-0 bottom-0 w-80 max-w-full bg-white shadow-2xl z-50 flex flex-col p-6 border-l border-slate-200"
             >
               <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className="overflow-hidden rounded-xl border border-amber-400 shadow-sm bg-slate-900">
-                    <img src="/logo.png" alt="AdaMaterials" className="w-10 h-12 object-cover" />
-                  </div>
-                  <span className="font-extrabold text-xl text-slate-950">
-                    Ada<span className="text-accent-600 font-black">Meeshaa</span>
-                  </span>
-                </div>
+                <BrandLogo />
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors cursor-pointer"

@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Lock, Mail, ArrowRight } from 'lucide-react';
 import GoogleSignInButton from '../components/GoogleSignInButton';
+import BrandLogo from '../components/BrandLogo';
 
 const LoginPage: React.FC = () => {
   const { login } = useAuth();
@@ -35,19 +36,10 @@ const LoginPage: React.FC = () => {
     <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
       <div className="max-w-md w-full space-y-6 bg-white p-8 rounded-3xl shadow-xl border border-slate-200">
         <div className="text-center">
-          <Link to="/" className="inline-flex flex-col items-center gap-3 mb-4 group">
-            <div className="overflow-hidden rounded-2xl border-2 border-amber-400/60 shadow-xl bg-slate-900 group-hover:scale-105 transition-all">
-              <img 
-                src="/logo.png" 
-                alt="AdaMaterials Logo" 
-                className="w-20 h-24 sm:w-24 sm:h-28 object-cover" 
-              />
-            </div>
-            <span className="text-2xl font-black text-slate-950 tracking-tight">
-              Ada<span className="text-accent-600 font-black">Materials</span>
-            </span>
+          <Link to="/" className="inline-flex flex-col items-center gap-2 mb-4 group">
+            <BrandLogo />
           </Link>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight">Sign In to AdaMaterials</h2>
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">Sign In to Revola</h2>
           <p className="mt-1.5 text-sm text-slate-500">
             Sign in with your Google account to access your dashboard
           </p>

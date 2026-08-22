@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, ShoppingBag, Store, Sparkles } from 'lucide-react';
 import GoogleSignInButton from '../components/GoogleSignInButton';
+import BrandLogo from '../components/BrandLogo';
 
 const RegisterPage: React.FC = () => {
   return (
@@ -9,19 +10,10 @@ const RegisterPage: React.FC = () => {
       <div className="max-w-md w-full space-y-6 bg-white p-8 rounded-3xl shadow-xl border border-slate-200">
         {/* Brand Header */}
         <div className="text-center">
-          <Link to="/" className="inline-flex flex-col items-center gap-3 mb-4 group">
-            <div className="overflow-hidden rounded-2xl border-2 border-amber-400/60 shadow-xl bg-slate-900 group-hover:scale-105 transition-all">
-              <img 
-                src="/logo.png" 
-                alt="AdaMaterials Logo" 
-                className="w-20 h-24 sm:w-24 sm:h-28 object-cover" 
-              />
-            </div>
-            <span className="text-2xl font-black text-slate-950 tracking-tight">
-              Ada<span className="text-accent-600 font-black">Materials</span>
-            </span>
+          <Link to="/" className="inline-flex flex-col items-center gap-2 mb-4 group">
+            <BrandLogo />
           </Link>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight">Sign Up for AdaMaterials</h2>
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">Sign Up for Revola</h2>
           <p className="mt-1.5 text-sm text-slate-500 max-w-sm mx-auto">
             Create your marketplace account using your Google identity. Fast, secure, and password-free.
           </p>
