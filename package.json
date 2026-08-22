@@ -1,0 +1,22 @@
+{
+  "name": "managed-marketplace",
+  "version": "1.0.0",
+  "description": "MERN Stack Managed Marketplace for Buying and Selling Usable Materials in Adama City, Ethiopia",
+  "main": "index.js",
+  "scripts": {
+    "install:all": "npm install --workspace=server && npm install --workspace=client",
+    "dev": "concurrently -n \"server,client\" -c \"blue,green\" \"npm run dev --workspace=server\" \"npm run dev --workspace=client\"",
+    "start:server": "npm run start --workspace=server",
+    "seed": "npm run seed --workspace=server",
+    "test:server": "npm run test --workspace=server",
+    "build:client": "npm run build --workspace=client",
+    "lint:all": "npm run lint --workspace=server && npm run lint --workspace=client"
+  },
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

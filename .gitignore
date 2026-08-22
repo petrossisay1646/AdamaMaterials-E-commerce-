@@ -1,0 +1,48 @@
+# Dependency directories
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Production builds & caches
+dist/
+build/
+client/dist/
+.vite/
+
+# Local environment files (preserve .env.example)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+server/.env
+client/.env
+
+# Temporary artifacts & zip archives
+*.zip
+*.tar.gz
+AdamaMaterials_Marketplace_v1.0_Deploy/
+managed-marketplace/
+20260813_*.jpg
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# Uploads & Local Media
+server/public/uploads/
+uploads/
+
+# IDE & OS files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
