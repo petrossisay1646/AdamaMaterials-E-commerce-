@@ -122,9 +122,14 @@ const LandingPage: React.FC = () => {
                 <div className="space-y-4">
                   <div className="aspect-video w-full rounded-xl bg-slate-850 overflow-hidden relative">
                     <img 
-                      src={featuredProducts[0]?.images?.[0] || 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=500&auto=format&fit=crop&q=60'} 
+                      src={featuredProducts[0]?.images?.[0] || 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=600&auto=format&fit=crop&q=80'} 
                       alt={featuredProducts[0]?.name || 'Featured Material'} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        target.onerror = null;
+                        target.src = 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=600&auto=format&fit=crop&q=80';
+                      }}
                     />
                   </div>
                   <div>
@@ -221,9 +226,14 @@ const LandingPage: React.FC = () => {
                 >
                   <div className="aspect-square bg-slate-100 relative overflow-hidden">
                     <img 
-                      src={product.images?.[0] || 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=500&auto=format&fit=crop&q=60'} 
+                      src={product.images?.[0] || 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=600&auto=format&fit=crop&q=80'} 
                       alt={product.name} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        target.onerror = null;
+                        target.src = 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=600&auto=format&fit=crop&q=80';
+                      }}
                     />
                     <span className="absolute top-3 left-3 bg-white/95 text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-slate-100 uppercase tracking-wide">
                       {product.condition}

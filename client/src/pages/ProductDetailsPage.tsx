@@ -110,9 +110,14 @@ const ProductDetailsPage: React.FC = () => {
         <div className="lg:col-span-7 space-y-4">
           <div className="aspect-square bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden relative">
             <img 
-              src={activeImage} 
+              src={activeImage || 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=600&auto=format&fit=crop&q=80'} 
               alt={product.name} 
               className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.onerror = null;
+                target.src = 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=600&auto=format&fit=crop&q=80';
+              }}
             />
             {product.quantity === 0 && (
               <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
@@ -129,7 +134,16 @@ const ProductDetailsPage: React.FC = () => {
                   onClick={() => setActiveImage(img)}
                   className={`w-20 h-20 rounded-xl border overflow-hidden flex-shrink-0 transition-all ${activeImage === img ? 'border-primary-600 ring-2 ring-primary-100' : 'border-slate-200 hover:border-slate-400'}`}
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <img 
+                    src={img} 
+                    alt="" 
+                    className="w-full h-full object-cover" 
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      target.onerror = null;
+                      target.src = 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=600&auto=format&fit=crop&q=80';
+                    }}
+                  />
                 </button>
               ))}
             </div>

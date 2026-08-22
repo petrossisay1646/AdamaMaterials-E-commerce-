@@ -709,7 +709,7 @@ const seedData = async (isImported = false) => {
         materialType: woodMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller1._id,
         approvalStatus: 'APPROVED',
@@ -728,7 +728,7 @@ const seedData = async (isImported = false) => {
         materialType: metalMat._id,
         condition: 'Like New',
         images: [
-          'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller1._id,
         approvalStatus: 'APPROVED',
@@ -747,7 +747,7 @@ const seedData = async (isImported = false) => {
         materialType: woodMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller1._id,
         approvalStatus: 'APPROVED',
@@ -766,7 +766,7 @@ const seedData = async (isImported = false) => {
         materialType: mixedMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1580481077197-0245e998e3b1?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1580481077197-0245e998e3b1?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller1._id,
         approvalStatus: 'APPROVED',
@@ -785,7 +785,7 @@ const seedData = async (isImported = false) => {
         materialType: woodMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller1._id,
         approvalStatus: 'APPROVED',
@@ -806,7 +806,7 @@ const seedData = async (isImported = false) => {
         materialType: electroMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller1._id,
         approvalStatus: 'APPROVED',
@@ -825,7 +825,7 @@ const seedData = async (isImported = false) => {
         materialType: electroMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller1._id,
         approvalStatus: 'APPROVED',
@@ -844,7 +844,7 @@ const seedData = async (isImported = false) => {
         materialType: electroMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller2._id,
         approvalStatus: 'APPROVED',
@@ -863,7 +863,7 @@ const seedData = async (isImported = false) => {
         materialType: electroMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller2._id,
         approvalStatus: 'APPROVED',
@@ -884,7 +884,7 @@ const seedData = async (isImported = false) => {
         materialType: plasticMat._id,
         condition: 'Used',
         images: [
-          'https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller4._id,
         approvalStatus: 'APPROVED',
@@ -903,7 +903,7 @@ const seedData = async (isImported = false) => {
         materialType: plasticMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1584473457406-6240486418e9?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1584473457406-6240486418e9?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller4._id,
         approvalStatus: 'APPROVED',
@@ -922,7 +922,7 @@ const seedData = async (isImported = false) => {
         materialType: plasticMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller4._id,
         approvalStatus: 'APPROVED',
@@ -943,7 +943,7 @@ const seedData = async (isImported = false) => {
         materialType: metalMat._id,
         condition: 'Used',
         images: [
-          'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1530982011887-3cc11cc85693?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller3._id,
         approvalStatus: 'APPROVED',
@@ -962,7 +962,7 @@ const seedData = async (isImported = false) => {
         materialType: metalMat._id,
         condition: 'Used',
         images: [
-          'https://images.unsplash.com/photo-1535813547-99c456a41d4a?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1535813547-99c456a41d4a?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller3._id,
         approvalStatus: 'APPROVED',
@@ -981,7 +981,7 @@ const seedData = async (isImported = false) => {
         materialType: metalMat._id,
         condition: 'Used',
         images: [
-          'https://images.unsplash.com/photo-1601524909162-be87252be298?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller3._id,
         approvalStatus: 'APPROVED',
@@ -1000,7 +1000,7 @@ const seedData = async (isImported = false) => {
         materialType: metalMat._id,
         condition: 'Fair',
         images: [
-          'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller3._id,
         approvalStatus: 'APPROVED',
@@ -1021,7 +1021,7 @@ const seedData = async (isImported = false) => {
         materialType: mixedMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller5._id,
         approvalStatus: 'APPROVED',
@@ -1040,7 +1040,7 @@ const seedData = async (isImported = false) => {
         materialType: woodMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller5._id,
         approvalStatus: 'APPROVED',
@@ -1059,7 +1059,7 @@ const seedData = async (isImported = false) => {
         materialType: mixedMat._id,
         condition: 'Like New',
         images: [
-          'https://images.unsplash.com/photo-1533779283484-84e1d70a1a5b?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1533779283484-84e1d70a1a5b?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller5._id,
         approvalStatus: 'APPROVED',
@@ -1080,7 +1080,7 @@ const seedData = async (isImported = false) => {
         materialType: electroMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller6._id,
         approvalStatus: 'APPROVED',
@@ -1099,7 +1099,7 @@ const seedData = async (isImported = false) => {
         materialType: electroMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller2._id,
         approvalStatus: 'APPROVED',
@@ -1118,7 +1118,7 @@ const seedData = async (isImported = false) => {
         materialType: electroMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller1._id,
         approvalStatus: 'APPROVED',
@@ -1137,7 +1137,7 @@ const seedData = async (isImported = false) => {
         materialType: electroMat._id,
         condition: 'Like New',
         images: [
-          'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller1._id,
         approvalStatus: 'APPROVED',
@@ -1158,7 +1158,7 @@ const seedData = async (isImported = false) => {
         materialType: plasticMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller1._id,
         approvalStatus: 'APPROVED',
@@ -1179,7 +1179,7 @@ const seedData = async (isImported = false) => {
         materialType: metalMat._id,
         condition: 'Used',
         images: [
-          'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller1._id,
         approvalStatus: 'APPROVED',
@@ -1198,7 +1198,7 @@ const seedData = async (isImported = false) => {
         materialType: metalMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1590402494587-44b71d7772f6?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller1._id,
         approvalStatus: 'APPROVED',
@@ -1217,7 +1217,7 @@ const seedData = async (isImported = false) => {
         materialType: metalMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller1._id,
         approvalStatus: 'APPROVED',
@@ -1238,7 +1238,7 @@ const seedData = async (isImported = false) => {
         materialType: electroMat._id,
         condition: 'Good',
         images: [
-          'https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller1._id,
         approvalStatus: 'APPROVED',
@@ -1257,7 +1257,7 @@ const seedData = async (isImported = false) => {
         materialType: paperMat._id,
         condition: 'Fair',
         images: [
-          'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80',
         ],
         seller: seller2._id,
         approvalStatus: 'PENDING_APPROVAL',
