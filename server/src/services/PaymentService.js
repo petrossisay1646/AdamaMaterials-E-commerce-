@@ -150,8 +150,8 @@ class ChapaProvider extends PaymentProvider {
       callback_url: callbackUrl || defaultCallback,
       return_url: returnUrl,
       customization: {
-        title: 'AdaMaterials Marketplace',
-        description: `Order ${order.trackingNumber || txRef}`,
+        title: 'AdaMeeshaa',
+        description: `Order ${order.trackingNumber || txRef}`.substring(0, 80),
       },
     };
 
