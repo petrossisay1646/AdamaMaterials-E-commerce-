@@ -40,6 +40,60 @@ class MockProvider extends PaymentProvider {
   }
 }
 
+/**
+ * Safely extract a human-readable message from any Chapa error response
+ * without converting nested objects to [object Object].
+ */
+function extractChapaErrorMessage(error) {
+  if (!error) return 'Unknown Chapa Gateway Error';
+  const respData = error.response?.data;
+
+  if (respData) {
+    // 1. If message is a clean string
+    if (typeof respData.message === 'string' && respData.message.trim()) {
+      return respData.message.trim();
+    }
+    // 2. If message is an object containing validation field errors (e.g. { amount: ['...'], email: ['...'] })
+    if (respData.message && typeof respData.message === 'object') {
+      const fieldErrors = [];
+      for (const [field, msgs] of Object.entries(respData.message)) {
+        if (Array.isArray(msgs)) {
+          fieldErrors.push(`${field}: ${msgs.join(', ')}`);
+        } else if (typeof msgs === 'string') {
+          fieldErrors.push(`${field}: ${msgs}`);
+        } else {
+          fieldErrors.push(`${field}: ${JSON.stringify(msgs)}`);
+        }
+      }
+      if (fieldErrors.length > 0) return fieldErrors.join(' | ');
+    }
+    // 3. If errors dictionary exists (e.g. { errors: { phone: [...] } })
+    if (respData.errors && typeof respData.errors === 'object') {
+      const fieldErrors = [];
+      for (const [field, msgs] of Object.entries(respData.errors)) {
+        if (Array.isArray(msgs)) {
+          fieldErrors.push(`${field}: ${msgs.join(', ')}`);
+        } else if (typeof msgs === 'string') {
+          fieldErrors.push(`${field}: ${msgs}`);
+        } else {
+          fieldErrors.push(`${field}: ${JSON.stringify(msgs)}`);
+        }
+      }
+      if (fieldErrors.length > 0) return fieldErrors.join(' | ');
+    }
+    // 4. Other string error fields
+    if (typeof respData.error === 'string' && respData.error.trim()) return respData.error.trim();
+    if (typeof respData.data === 'string' && respData.data.trim()) return respData.data.trim();
+  }
+
+  // 5. Fallback to standard Error.message
+  if (typeof error.message === 'string' && error.message.trim()) {
+    return error.message.trim();
+  }
+
+  return 'Chapa Payment Gateway Initialization Failed';
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 2. Chapa Provider (Ethiopian Payment Gateway)
 //    Docs: https://developer.chapa.co/
@@ -54,7 +108,7 @@ class ChapaProvider extends PaymentProvider {
   async initializePayment(order, callbackUrl) {
     const key = process.env.CHAPA_SECRET_KEY;
     if (!key) {
-      throw new Error('CHAPA_SECRET_KEY is missing in server/.env. Please configure your Chapa Test Secret Key (CHASECK_TEST-...).');
+      throw new Error('CHAPA_SECRET_KEY is missing in server/.env. Please configure your Chapa API Key (e.g. CHASECK_TEST-...).');
     }
 
     const txRef = `TX-CHAPA-${Date.now()}-${order._id}`;
@@ -117,7 +171,9 @@ class ChapaProvider extends PaymentProvider {
           paymentUrl: response.data.data.checkout_url,
         };
       }
-      throw new Error(response.data?.message || 'Chapa initialization failed.');
+      
+      const errMsg = extractChapaErrorMessage({ response });
+      throw new Error(errMsg);
     } catch (error) {
       const respData = error.response?.data;
       console.error('[Chapa API Error Details]:', {
@@ -126,7 +182,7 @@ class ChapaProvider extends PaymentProvider {
         data: respData,
         message: error.message,
       });
-      const errMsg = respData?.message || error.message || 'Chapa Payment Gateway Initialization Failed.';
+      const errMsg = extractChapaErrorMessage(error);
       throw new Error(`Chapa Gateway Error: ${errMsg}`);
     }
   }

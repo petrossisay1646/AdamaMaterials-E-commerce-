@@ -208,7 +208,21 @@ const CheckoutPage: React.FC = () => {
         }
       }
     } catch (error: any) {
-      const msg = error.response?.data?.message || 'Checkout failed. Please try again.';
+      let msg = 'Checkout failed. Please try again.';
+      const respData = error.response?.data;
+      if (respData) {
+        if (typeof respData.message === 'string' && respData.message.trim()) {
+          msg = respData.message;
+        } else if (respData.message && typeof respData.message === 'object') {
+          msg = Object.entries(respData.message)
+            .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : String(v)}`)
+            .join('; ');
+        } else if (typeof respData.error === 'string') {
+          msg = respData.error;
+        }
+      } else if (typeof error.message === 'string') {
+        msg = error.message;
+      }
       showToast(msg, 'error');
     } finally {
       setPlacingOrder(false);

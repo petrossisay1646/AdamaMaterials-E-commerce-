@@ -6,11 +6,22 @@ const connectDB = async () => {
 
   try {
     console.log(`Connecting to primary MongoDB URI: ${dbUri}... 💾`);
-    // Connect with a shorter timeout (3 seconds) to fail quickly if service is not running
     await mongoose.connect(dbUri, {
-      serverSelectionTimeoutMS: 3000,
+      serverSelectionTimeoutMS: 5000,
     });
     console.log('Connected to primary MongoDB server successfully! 🚀');
+
+    // If primary DB lacks map places or initial data, safely seed
+    try {
+      const MapPlace = require('../models/MapPlace');
+      const count = await MapPlace.countDocuments();
+      if (count === 0) {
+        console.log('🌱 Primary database has 0 map places. Performing safe initial seed...');
+        await seedData(false);
+      }
+    } catch (seedErr) {
+      console.warn('Auto-seed check note:', seedErr.message);
+    }
   } catch (error) {
     console.warn('⚠️ Primary MongoDB connection failed. Reason:', error.message);
     console.log('🔄 Fallback: Initializing development-only in-memory MongoDB database... 🔌');
