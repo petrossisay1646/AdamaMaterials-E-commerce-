@@ -122,15 +122,8 @@ const App: React.FC = () => {
                   }
                 />
 
-                {/* Marketplace Map — accessible to all logged-in users */}
-                <Route
-                  path="/map"
-                  element={
-                    <ProtectedRoute allowedRoles={['BUYER', 'SELLER', 'STAFF', 'ADMIN']}>
-                      <MarketplaceMapPage />
-                    </ProtectedRoute>
-                  }
-                />
+                {/* Marketplace Map — public discovery for all users and visitors */}
+                <Route path="/map" element={<MarketplaceMapPage />} />
 
                 {/* Role Selection / Onboarding — for new users (post Google Sign-In) */}
                 <Route

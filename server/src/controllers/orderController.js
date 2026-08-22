@@ -192,8 +192,9 @@ exports.checkout = asyncHandler(async (req, res, next) => {
 
   if (paymentMethod !== 'BANK_TRANSFER') {
     try {
+      const orderWithBuyer = await Order.findById(order._id).populate('buyer', 'name email phoneNumber');
       const callbackUrl = `${req.protocol}://${req.get('host')}/api/v1/payments/webhook/${paymentMethod.toLowerCase()}`;
-      const payInit = await PaymentService.initialize(order, paymentMethod, callbackUrl);
+      const payInit = await PaymentService.initialize(orderWithBuyer || order, paymentMethod, callbackUrl);
       
       paymentUrl = payInit.paymentUrl;
       transactionId = payInit.transactionId;

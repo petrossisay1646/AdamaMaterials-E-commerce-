@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import {
@@ -9,14 +11,14 @@ import {
   MapPin,
   Navigation,
   Search,
-  Layers,
   ArrowUpRight,
   Clock,
   Car,
   X,
   Phone,
-  PackageCheck,
   CheckCircle2,
+  Compass,
+  AlertCircle,
 } from 'lucide-react';
 
 interface PlaceItem {
@@ -44,6 +46,22 @@ interface RouteInfo {
   targetTitle: string;
 }
 
+const ADAMA_CENTER_COORDS: [number, number] = [8.5400, 39.2700];
+
+// Polygon boundary for Adama City Service Area
+const ADAMA_SERVICE_AREA: [number, number][] = [
+  [8.5950, 39.2450],
+  [8.5980, 39.2950],
+  [8.5850, 39.3250],
+  [8.5450, 39.3400],
+  [8.4980, 39.3300],
+  [8.4650, 39.2850],
+  [8.4650, 39.2350],
+  [8.5050, 39.2050],
+  [8.5600, 39.2100],
+  [8.5950, 39.2450],
+];
+
 const MarketplaceMapPage: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -57,14 +75,31 @@ const MarketplaceMapPage: React.FC = () => {
   const [routeInfo, setRouteInfo] = useState<RouteInfo | null>(null);
   const [routeLoading, setRouteLoading] = useState<boolean>(false);
   const [gpsLoading, setGpsLoading] = useState<boolean>(false);
+  const [gpsOutsideWarning, setGpsOutsideWarning] = useState<string | null>(null);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<any>(null);
-  const markersGroupRef = useRef<any>(null);
-  const routeLayerRef = useRef<any>(null);
-  const buyerMarkerRef = useRef<any>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const markersGroupRef = useRef<L.LayerGroup | null>(null);
+  const routeLayerRef = useRef<L.Polyline | null>(null);
+  const buyerMarkerRef = useRef<L.Marker | null>(null);
 
-  // Fetch Map Places & Sellers
+  // Filtered places computed via useMemo
+  const filteredPlaces = useMemo(() => {
+    return places.filter((p) => {
+      if (typeFilter !== 'ALL' && p.placeType !== typeFilter) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchTitle = p.title.toLowerCase().includes(q);
+        const matchAddress = p.address.toLowerCase().includes(q);
+        const matchMaterials = p.materials?.some((m) => m.toLowerCase().includes(q));
+        const matchCategory = p.category?.toLowerCase().includes(q);
+        if (!matchTitle && !matchAddress && !matchMaterials && !matchCategory) return false;
+      }
+      return true;
+    });
+  }, [places, typeFilter, searchQuery]);
+
+  // Fetch Map Places & Sellers from API
   const fetchMapPlaces = async (lat?: number, lng?: number) => {
     try {
       setLoading(true);
@@ -75,7 +110,7 @@ const MarketplaceMapPage: React.FC = () => {
       }
       const res = await api.get('/map/places', { params });
       if (res.data.success) {
-        setPlaces(res.data.places);
+        setPlaces(res.data.places || []);
       }
     } catch (err) {
       console.error('Failed to load map data', err);
@@ -89,32 +124,18 @@ const MarketplaceMapPage: React.FC = () => {
     fetchMapPlaces();
   }, []);
 
-  // Initialize Leaflet Map
+  // Initialize Leaflet Map once container is mounted
   useEffect(() => {
-    let isMounted = true;
+    if (!mapContainerRef.current) return;
 
-    const initMap = async () => {
-      if (typeof window === 'undefined' || !mapContainerRef.current) return;
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.remove();
+      mapInstanceRef.current = null;
+    }
 
-      // Ensure leaflet stylesheet is present
-      if (!document.getElementById('leaflet-css')) {
-        const link = document.createElement('link');
-        link.id = 'leaflet-css';
-        link.rel = 'stylesheet';
-        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-        document.head.appendChild(link);
-      }
-
-      const L = (await import('leaflet')).default;
-
-      if (!isMounted || !mapContainerRef.current) return;
-
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-      }
-
+    try {
       const map = L.map(mapContainerRef.current, {
-        center: [8.5400, 39.2700], // Adama Center
+        center: ADAMA_CENTER_COORDS,
         zoom: 13,
         zoomControl: true,
       });
@@ -125,57 +146,59 @@ const MarketplaceMapPage: React.FC = () => {
       }).addTo(map);
 
       // Adama Service Area Boundary Polygon
-      const ADAMA_SERVICE_AREA = [
-        [8.5950, 39.2450],
-        [8.5980, 39.2950],
-        [8.5850, 39.3250],
-        [8.5450, 39.3400],
-        [8.4980, 39.3300],
-        [8.4650, 39.2850],
-        [8.4650, 39.2350],
-        [8.5050, 39.2050],
-        [8.5600, 39.2100],
-        [8.5950, 39.2450],
-      ];
-
-      L.polygon(ADAMA_SERVICE_AREA as any, {
+      L.polygon(ADAMA_SERVICE_AREA, {
         color: '#d97706',
         weight: 2,
         fillColor: '#f59e0b',
         fillOpacity: 0.08,
-        dashArray: '4, 4',
+        dashArray: '5, 5',
       }).addTo(map);
 
-      markersGroupRef.current = L.layerGroup().addTo(map);
-
+      const markersGroup = L.layerGroup().addTo(map);
+      markersGroupRef.current = markersGroup;
       mapInstanceRef.current = map;
-      renderMarkers();
-    };
 
-    initMap();
+      // Ensure tiles render completely after layout stabilizes
+      const timers = [
+        setTimeout(() => { if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize(); }, 100),
+        setTimeout(() => { if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize(); }, 300),
+        setTimeout(() => { if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize(); }, 700),
+        setTimeout(() => { if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize(); }, 1500),
+      ];
 
-    return () => {
-      isMounted = false;
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-      }
-    };
+      const handleResize = () => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+        }
+      };
+      window.addEventListener('resize', handleResize);
+
+      return () => {
+        timers.forEach(clearTimeout);
+        window.removeEventListener('resize', handleResize);
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.remove();
+          mapInstanceRef.current = null;
+          markersGroupRef.current = null;
+        }
+      };
+    } catch (e) {
+      console.error('Error initializing Leaflet map:', e);
+    }
   }, []);
 
   // Render Marker Icons on the map
-  const renderMarkers = async () => {
+  const renderMarkers = useCallback(() => {
     if (!mapInstanceRef.current || !markersGroupRef.current) return;
-    const L = (await import('leaflet')).default;
 
     markersGroupRef.current.clearLayers();
 
-    // 1. Buyer Marker
+    // 1. User GPS Marker
     if (buyerLocation) {
       const buyerIcon = L.divIcon({
-        className: 'buyer-gps-pin',
+        className: 'custom-buyer-pin',
         html: `
-          <div style="background-color: #2563eb; color: white; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 6px rgba(37,99,235,0.25); border: 2.5px solid white;">
+          <div style="background-color: #2563eb; color: white; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 6px rgba(37,99,235,0.28); border: 2.5px solid white;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
           </div>
         `,
@@ -184,64 +207,57 @@ const MarketplaceMapPage: React.FC = () => {
       });
 
       buyerMarkerRef.current = L.marker([buyerLocation.lat, buyerLocation.lng], { icon: buyerIcon })
-        .bindTooltip('Your Location', { permanent: false, direction: 'top' })
+        .bindTooltip('Your Detected Location', { permanent: false, direction: 'top', offset: [0, -16] })
         .addTo(markersGroupRef.current);
     }
 
-    // 2. Place Markers
+    // 2. Marketplace Place Markers
     filteredPlaces.forEach((place) => {
       let iconHtml = '';
       if (place.placeType === 'MARKETPLACE_SELLER') {
         iconHtml = `
-          <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(217,119,6,0.4); border: 2px solid white;">
+          <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(217,119,6,0.45); border: 2px solid white; cursor: pointer;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"></path><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"></path><path d="M2 7h20"></path></svg>
           </div>
         `;
       } else if (place.placeType === 'ADMIN_MANAGED') {
         iconHtml = `
-          <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(5,150,105,0.4); border: 2px solid white;">
+          <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(5,150,105,0.45); border: 2px solid white; cursor: pointer;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path><path d="M10 6h4"></path><path d="M10 10h4"></path><path d="M10 14h4"></path><path d="M10 18h4"></path></svg>
           </div>
         `;
       } else {
         iconHtml = `
-          <div style="background: linear-gradient(135deg, #64748b, #475569); color: white; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(0,0,0,0.25); border: 2px solid white;">
+          <div style="background: linear-gradient(135deg, #64748b, #475569); color: white; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(0,0,0,0.25); border: 2px solid white; cursor: pointer;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
           </div>
         `;
       }
 
       const placeIcon = L.divIcon({
-        className: 'place-custom-icon',
+        className: 'custom-map-marker',
         html: iconHtml,
         iconSize: [38, 38],
         iconAnchor: [19, 19],
       });
 
-      const marker = L.marker(place.coordinates, { icon: placeIcon }).addTo(markersGroupRef.current);
+      const marker = L.marker(place.coordinates, { icon: placeIcon })
+        .bindTooltip(place.title, { direction: 'top', offset: [0, -18] })
+        .addTo(markersGroupRef.current!);
+
       marker.on('click', () => {
         setActivePlace(place);
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.setView(place.coordinates, 15);
+        }
       });
     });
-  };
+  }, [filteredPlaces, buyerLocation]);
 
+  // Re-run marker rendering whenever places or filters change
   useEffect(() => {
     renderMarkers();
-  }, [places, typeFilter, searchQuery, buyerLocation]);
-
-  // Filter places
-  const filteredPlaces = places.filter((p) => {
-    if (typeFilter !== 'ALL' && p.placeType !== typeFilter) return false;
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      const matchTitle = p.title.toLowerCase().includes(q);
-      const matchAddress = p.address.toLowerCase().includes(q);
-      const matchMaterials = p.materials?.some((m) => m.toLowerCase().includes(q));
-      const matchCategory = p.category?.toLowerCase().includes(q);
-      if (!matchTitle && !matchAddress && !matchMaterials && !matchCategory) return false;
-    }
-    return true;
-  });
+  }, [renderMarkers]);
 
   // Handle GPS detection
   const handleDetectGPS = () => {
@@ -250,73 +266,91 @@ const MarketplaceMapPage: React.FC = () => {
       return;
     }
     setGpsLoading(true);
+    setGpsOutsideWarning(null);
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setGpsLoading(false);
         const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
         setBuyerLocation(loc);
         fetchMapPlaces(loc.lat, loc.lng);
+
+        // Check if detected GPS is within Adama coordinates (Lat: ~8.45-8.62, Lng: ~39.18-39.35)
+        const isInsideAdama =
+          loc.lat >= 8.45 && loc.lat <= 8.62 && loc.lng >= 39.18 && loc.lng <= 39.36;
+
+        if (!isInsideAdama) {
+          setGpsOutsideWarning(`Detected location (${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}) is outside Adama Service Area.`);
+          showToast('Detected location is outside Adama service area.', 'info');
+        } else {
+          showToast('GPS location updated successfully!', 'success');
+        }
+
         if (mapInstanceRef.current) {
           mapInstanceRef.current.setView([loc.lat, loc.lng], 14);
         }
-        showToast('Your GPS location detected! Sorting nearby places.', 'success');
       },
       (err) => {
         setGpsLoading(false);
-        showToast(`Could not get GPS: ${err.message}`, 'error');
+        console.warn('Geolocation error:', err.message);
+        showToast('Could not obtain GPS permission. Centering Adama City.', 'info');
+        handleCenterAdama();
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 8000 }
     );
   };
 
-  // Calculate & Draw Road Route
-  const handleGetDirections = async (place: PlaceItem) => {
-    if (!buyerLocation) {
-      showToast('Please detect or select your GPS location first to get directions.', 'warning');
-      handleDetectGPS();
-      return;
+  // Center Adama
+  const handleCenterAdama = () => {
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setView(ADAMA_CENTER_COORDS, 13);
     }
+  };
 
-    setRouteLoading(true);
+  // Fetch Road Route from user location to place
+  const handleGetDirections = async (place: PlaceItem) => {
+    const originLat = buyerLocation?.lat || ADAMA_CENTER_COORDS[0];
+    const originLng = buyerLocation?.lng || ADAMA_CENTER_COORDS[1];
+
     try {
+      setRouteLoading(true);
       const res = await api.get('/map/route', {
         params: {
-          fromLat: buyerLocation.lat,
-          fromLng: buyerLocation.lng,
+          fromLat: originLat,
+          fromLng: originLng,
           toLat: place.coordinates[0],
           toLng: place.coordinates[1],
         },
       });
 
-      if (res.data.success) {
-        const { distanceKm, durationMin, routeGeometry, source } = res.data;
+      if (res.data.success && res.data.routeGeometry && mapInstanceRef.current) {
+        if (routeLayerRef.current) {
+          mapInstanceRef.current.removeLayer(routeLayerRef.current);
+        }
+
+        routeLayerRef.current = L.polyline(res.data.routeGeometry, {
+          color: '#2563eb',
+          weight: 5,
+          opacity: 0.85,
+          dashArray: '1, 8',
+        }).addTo(mapInstanceRef.current);
+
+        mapInstanceRef.current.fitBounds(routeLayerRef.current.getBounds(), {
+          padding: [60, 60],
+        });
+
         setRouteInfo({
-          distanceKm,
-          durationMin,
-          source,
+          distanceKm: res.data.distanceKm,
+          durationMin: res.data.durationMin,
+          source: res.data.source,
           targetTitle: place.title,
         });
 
-        const L = (await import('leaflet')).default;
-        if (mapInstanceRef.current) {
-          if (routeLayerRef.current) {
-            mapInstanceRef.current.removeLayer(routeLayerRef.current);
-          }
-
-          const routePolyline = L.polyline(routeGeometry, {
-            color: '#2563eb',
-            weight: 5,
-            opacity: 0.85,
-            smoothFactor: 1,
-          }).addTo(mapInstanceRef.current);
-
-          routeLayerRef.current = routePolyline;
-          mapInstanceRef.current.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
-        }
-        showToast(`Road route calculated: ${distanceKm} km (~${durationMin} min drive)`, 'success');
+        showToast(`Route mapped: ${res.data.distanceKm} km (~${res.data.durationMin} mins)`, 'success');
       }
-    } catch (err: any) {
-      showToast('Failed to calculate road route.', 'error');
+    } catch (err) {
+      console.error('Failed to calculate road route', err);
+      showToast('Could not calculate road directions.', 'error');
     } finally {
       setRouteLoading(false);
     }
@@ -331,11 +365,11 @@ const MarketplaceMapPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-[calc(100vh-65px)] overflow-hidden bg-slate-100">
-      {/* Left Sidebar: Controls & Place Directory */}
-      <div className="w-full lg:w-96 flex flex-col bg-white border-r border-slate-200 shadow-lg z-10">
-        {/* Search & Filter Bar */}
-        <div className="p-4 border-b border-slate-200 bg-slate-50/80 space-y-3">
+    <div className="flex-1 flex flex-col lg:flex-row w-full min-h-[calc(100vh-5rem)] h-full bg-slate-100 relative">
+      {/* Left Sidebar: Search & Place Directory */}
+      <div className="w-full lg:w-96 flex flex-col h-[42vh] lg:h-[calc(100vh-5rem)] bg-white border-r border-slate-200 shadow-md z-20 flex-shrink-0 order-2 lg:order-1">
+        {/* Search & Filter Header */}
+        <div className="p-4 border-b border-slate-200 bg-slate-50/90 space-y-3 flex-shrink-0">
           <div className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
             <input
@@ -391,12 +425,20 @@ const MarketplaceMapPage: React.FC = () => {
               <span>OSM</span>
             </button>
           </div>
+
+          {/* GPS Outside Warning alert */}
+          {gpsOutsideWarning && (
+            <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2 text-[11px] text-amber-800">
+              <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+              <span>{gpsOutsideWarning}</span>
+            </div>
+          )}
         </div>
 
         {/* Directory List */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {loading ? (
-            <div className="p-8 text-center text-xs text-slate-400">Loading map places...</div>
+            <div className="p-8 text-center text-xs text-slate-400">Loading marketplace locations...</div>
           ) : filteredPlaces.length === 0 ? (
             <div className="p-8 text-center text-xs text-slate-400">No places match your search criteria.</div>
           ) : (
@@ -459,8 +501,8 @@ const MarketplaceMapPage: React.FC = () => {
       </div>
 
       {/* Right Map Canvas */}
-      <div className="flex-1 relative">
-        <div ref={mapContainerRef} className="absolute inset-0 w-full h-full" />
+      <div className="flex-1 h-[58vh] lg:h-[calc(100vh-5rem)] min-h-[450px] relative z-10 order-1 lg:order-2 bg-slate-200">
+        <div ref={mapContainerRef} className="w-full h-full min-h-[450px]" style={{ width: '100%', height: '100%', minHeight: '450px' }} />
 
         {/* Floating Top Map Controls */}
         <div className="absolute top-4 left-4 z-[400] flex items-center gap-2">
@@ -470,7 +512,15 @@ const MarketplaceMapPage: React.FC = () => {
             className="px-3.5 py-2 bg-white/95 backdrop-blur-xs hover:bg-white text-slate-800 rounded-xl shadow-lg border border-slate-200 text-xs font-bold flex items-center gap-2 transition-all cursor-pointer disabled:opacity-60"
           >
             <Navigation className={`w-4 h-4 text-blue-600 ${gpsLoading ? 'animate-spin' : ''}`} />
-            <span>{buyerLocation ? 'Update GPS Location' : 'Detect My GPS'}</span>
+            <span>{buyerLocation ? 'Update GPS Location' : 'Use My Location'}</span>
+          </button>
+
+          <button
+            onClick={handleCenterAdama}
+            className="px-3.5 py-2 bg-white/95 backdrop-blur-xs hover:bg-white text-slate-800 rounded-xl shadow-lg border border-slate-200 text-xs font-bold flex items-center gap-2 transition-all cursor-pointer"
+          >
+            <Compass className="w-4 h-4 text-amber-600" />
+            <span>Center Adama</span>
           </button>
         </div>
 
@@ -503,7 +553,7 @@ const MarketplaceMapPage: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setActivePlace(null)}
-                  className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100"
+                  className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -523,7 +573,7 @@ const MarketplaceMapPage: React.FC = () => {
                     <span>{activePlace.phone}</span>
                   </div>
                 )}
-                {activePlace.distanceKm !== null && activePlace.distanceKm !== undefined && (
+                {activePlace.distanceKm !== null && placeWithDistanceKm(activePlace) && (
                   <div className="flex items-center gap-2 text-blue-700 font-bold">
                     <Car className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
                     <span>{activePlace.distanceKm} km from your location</span>
@@ -576,7 +626,7 @@ const MarketplaceMapPage: React.FC = () => {
             </div>
             <button
               onClick={handleClearRoute}
-              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 cursor-pointer"
               title="Clear Route"
             >
               <X className="w-4 h-4" />
@@ -587,5 +637,10 @@ const MarketplaceMapPage: React.FC = () => {
     </div>
   );
 };
+
+// Helper
+function placeWithDistanceKm(place: PlaceItem): boolean {
+  return place.distanceKm !== null && place.distanceKm !== undefined;
+}
 
 export default MarketplaceMapPage;

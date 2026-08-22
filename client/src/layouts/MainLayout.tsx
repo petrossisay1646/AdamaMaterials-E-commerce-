@@ -92,8 +92,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
       {/* Header */}
-      <header className="sticky top-0 z-40 w-full bg-white/95 border-b border-slate-200 backdrop-blur-md shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-22 flex items-center justify-between">
+      <header className="sticky top-0 z-50 w-full bg-white/95 border-b border-slate-200 backdrop-blur-md shadow-xs relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-22 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 font-extrabold tracking-tight group py-1">
             <div className="relative overflow-hidden rounded-xl shadow-md border-2 border-amber-400/60 group-hover:scale-105 transition-all bg-slate-900 flex-shrink-0">
@@ -105,10 +105,10 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </div>
             <div className="flex flex-col">
               <span className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight leading-tight">
-                Ada<span className="text-accent-600 font-black">Materials</span>
+                Ada<span className="text-accent-600 font-black">Meeshaa</span>
               </span>
               <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase">
-                Adama Marketplace
+                Gabaa Meeshaa Adamaa
               </span>
             </div>
           </Link>
@@ -289,7 +289,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     <img src="/logo.png" alt="AdaMaterials" className="w-10 h-12 object-cover" />
                   </div>
                   <span className="font-extrabold text-xl text-slate-950">
-                    Ada<span className="text-accent-600 font-black">Materials</span>
+                    Ada<span className="text-accent-600 font-black">Meeshaa</span>
                   </span>
                 </div>
                 <button
@@ -378,7 +378,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 flex flex-col">{children}</main>
+      <main className="flex-1 flex flex-col min-h-0 relative">{children}</main>
 
       <footer className="bg-slate-950 text-slate-400 py-14 border-t border-slate-850">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -393,16 +393,16 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               </div>
               <div className="flex flex-col">
                 <span className="font-black tracking-tight text-white text-2xl sm:text-3xl leading-tight">
-                  Ada<span className="text-accent-400 font-black">Materials</span>
+                  Ada<span className="text-accent-400 font-black">Meeshaa</span>
                 </span>
                 <span className="text-xs font-semibold text-slate-400 tracking-wider uppercase mt-0.5">
-                  Adama City, Ethiopia
+                  Adama City, Oromia, Ethiopia
                 </span>
               </div>
             </div>
             <p className="text-sm text-slate-400 max-w-xs leading-relaxed">
-              Adama City's local marketplace to buy and sell usable construction materials, scrap
-              metals, plastics, and industrial equipment safely.
+              Gabaa Meeshaa Adamaa — Adama's premier marketplace for reclaimed construction materials, scrap
+              metals, plastics, and industrial equipment.
             </p>
           </div>
           <div className="flex flex-col gap-2">

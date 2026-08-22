@@ -54,30 +54,41 @@ class ChapaProvider extends PaymentProvider {
   async initializePayment(order, callbackUrl) {
     const key = process.env.CHAPA_SECRET_KEY;
     if (!key) {
-      throw new Error('CHAPA_SECRET_KEY is missing in server/.env. Please configure your Chapa API Key.');
+      throw new Error('CHAPA_SECRET_KEY is missing in server/.env. Please configure your Chapa Test Secret Key (CHASECK_TEST-...).');
     }
 
     const txRef = `TX-CHAPA-${Date.now()}-${order._id}`;
     let phone = order.deliveryAddress?.phoneNumber || order.buyer?.phoneNumber || '0911000000';
-    let formattedPhone = phone.replace(/[^0-9+]/g, '');
+    let formattedPhone = String(phone).replace(/[^0-9+]/g, '');
     if (formattedPhone.startsWith('+251')) formattedPhone = '0' + formattedPhone.substring(4);
     else if (formattedPhone.startsWith('251')) formattedPhone = '0' + formattedPhone.substring(3);
     if (!formattedPhone || formattedPhone.length < 9) formattedPhone = '0911000000';
 
-    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+    const clientUrl =
+      process.env.CLIENT_URL ||
+      (process.env.NODE_ENV === 'production'
+        ? 'https://adama-materials-e-commerce.vercel.app'
+        : 'http://localhost:5173');
+
+    const backendUrl =
+      process.env.BACKEND_URL ||
+      (process.env.NODE_ENV === 'production'
+        ? 'https://adamamaterials-e-commerce.onrender.com'
+        : 'http://localhost:5000');
+
     const returnUrl = `${clientUrl}/payment/callback?tx_ref=${txRef}&provider=chapa`;
     const defaultCallback = `${backendUrl}/api/v1/payments/webhook/chapa`;
 
-    const fullName = (order.buyer?.name || 'Buyer').trim();
+    const fullName = (order.buyer?.name || 'Buyer Customer').trim();
     const nameParts = fullName.split(' ');
     const firstName = nameParts[0] || 'Buyer';
-    const lastName = nameParts.slice(1).join(' ') || 'User';
+    const lastName = nameParts.slice(1).join(' ') || 'Customer';
+    const email = order.buyer?.email || 'buyer@adama-materials.com';
 
     const payload = {
-      amount: order.total,
+      amount: String(order.total),
       currency: 'ETB',
-      email: order.buyer?.email || 'buyer@marketplace.com',
+      email: email,
       first_name: firstName,
       last_name: lastName,
       phone_number: formattedPhone,
@@ -86,22 +97,36 @@ class ChapaProvider extends PaymentProvider {
       return_url: returnUrl,
       customization: {
         title: 'AdaMaterials Marketplace',
-        description: `Payment for Order ${order.trackingNumber}`,
+        description: `Order ${order.trackingNumber || txRef}`,
       },
     };
 
     try {
       const response = await axios.post(`${this.baseUrl}/transaction/initialize`, payload, {
-        headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+        headers: {
+          Authorization: `Bearer ${key}`,
+          'Content-Type': 'application/json',
+        },
         timeout: 15000,
       });
+
       if (response.data?.status === 'success' && response.data?.data?.checkout_url) {
-        return { success: true, transactionId: txRef, paymentUrl: response.data.data.checkout_url };
+        return {
+          success: true,
+          transactionId: txRef,
+          paymentUrl: response.data.data.checkout_url,
+        };
       }
       throw new Error(response.data?.message || 'Chapa initialization failed.');
     } catch (error) {
-      console.error('Chapa init error:', error.response?.data || error.message);
-      const errMsg = error.response?.data?.message || error.message || 'Chapa Payment Gateway Initialization Failed.';
+      const respData = error.response?.data;
+      console.error('[Chapa API Error Details]:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: respData,
+        message: error.message,
+      });
+      const errMsg = respData?.message || error.message || 'Chapa Payment Gateway Initialization Failed.';
       throw new Error(`Chapa Gateway Error: ${errMsg}`);
     }
   }
@@ -124,7 +149,7 @@ class ChapaProvider extends PaymentProvider {
       }
       return { status: 'FAILED', transactionId, message: response.data?.message || 'Payment verification failed on Chapa' };
     } catch (error) {
-      console.error('Chapa verify error:', error.response?.data || error.message);
+      console.error('[Chapa Verify Error]:', error.response?.data || error.message);
       return { status: 'FAILED', transactionId, message: error.response?.data?.message || error.message };
     }
   }
