@@ -15,9 +15,10 @@ const connectDB = async () => {
     try {
       const MapPlace = require('../models/MapPlace');
       const count = await MapPlace.countDocuments();
-      if (count === 0) {
-        console.log('🌱 Primary database has 0 map places. Performing safe initial seed...');
-        await seedData(false);
+      if (count < 8) {
+        console.log('🌱 Primary database has fewer than 8 map places. Running safe idempotent places seed...');
+        const seedDemoPlaces = require('../jobs/seedPlaces');
+        await seedDemoPlaces();
       }
     } catch (seedErr) {
       console.warn('Auto-seed check note:', seedErr.message);

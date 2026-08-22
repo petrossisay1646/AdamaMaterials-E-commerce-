@@ -8,6 +8,7 @@
     "start": "node src/server.js",
     "dev": "node src/server.js",
     "seed": "node src/jobs/seed.js",
+    "seed:places": "node src/jobs/seedPlaces.js",
     "test": "node --test tests/**/*.test.js"
   },
   "dependencies": {
