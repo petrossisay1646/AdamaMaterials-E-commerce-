@@ -12,11 +12,24 @@ const LandingPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch products
-    api.get('/products?limit=4')
+    // Fetch products and strictly deduplicate by name and ID
+    api.get('/products?limit=12')
       .then(res => {
-        if (res.data.success) {
-          setFeaturedProducts(res.data.products);
+        if (res.data.success && Array.isArray(res.data.products)) {
+          const unique: any[] = [];
+          const seenNames = new Set<string>();
+          const seenIds = new Set<string>();
+
+          for (const p of res.data.products) {
+            const normName = (p.name || '').trim().toLowerCase();
+            const pId = String(p._id);
+            if (!seenNames.has(normName) && !seenIds.has(pId)) {
+              seenNames.add(normName);
+              seenIds.add(pId);
+              unique.push(p);
+            }
+          }
+          setFeaturedProducts(unique);
         }
       })
       .catch(err => console.error(err));
@@ -91,7 +104,7 @@ const LandingPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Graphical display */}
+          {/* Graphical display: Today's Pick */}
           <div className="lg:col-span-5 hidden lg:block">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
@@ -101,25 +114,37 @@ const LandingPage: React.FC = () => {
             >
               <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
                 <span className="text-sm font-bold text-slate-400">Today's Pick</span>
-                <span className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full font-bold">100% Usable</span>
+                <span className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full font-bold">
+                  {featuredProducts[0]?.condition || '100% Usable'}
+                </span>
               </div>
-              <div className="space-y-4">
-                <div className="aspect-video w-full rounded-xl bg-slate-850 overflow-hidden relative">
-                  <img 
-                    src="https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=500&auto=format&fit=crop&q=60" 
-                    alt="Wood Pallets" 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg text-white">Pine Wood Pallets (Sorted)</h3>
-                  <div className="text-xs text-slate-500 mt-1">Location: Bole Subcity, Adama</div>
-                  <div className="flex items-center justify-between mt-4">
-                    <span className="text-accent-400 font-extrabold text-lg">450 ETB <span className="text-[10px] text-slate-400">/ unit</span></span>
-                    <span className="text-xs text-emerald-400 font-semibold">8 in Stock</span>
+              <Link to={featuredProducts[0] ? `/products/${featuredProducts[0]._id}` : '/products'} className="block group">
+                <div className="space-y-4">
+                  <div className="aspect-video w-full rounded-xl bg-slate-850 overflow-hidden relative">
+                    <img 
+                      src={featuredProducts[0]?.images?.[0] || 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=500&auto=format&fit=crop&q=60'} 
+                      alt={featuredProducts[0]?.name || 'Featured Material'} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-white group-hover:text-orange-400 transition-colors">
+                      {featuredProducts[0]?.name || 'Pine Wood Pallets (Sorted)'}
+                    </h3>
+                    <div className="text-xs text-slate-500 mt-1">
+                      Location: {featuredProducts[0]?.location?.subCity || 'Kebele 02'}, {featuredProducts[0]?.location?.city || 'Adama'}
+                    </div>
+                    <div className="flex items-center justify-between mt-4">
+                      <span className="text-orange-400 font-extrabold text-lg">
+                        {featuredProducts[0]?.price || 450} ETB <span className="text-[10px] text-slate-400">/ unit</span>
+                      </span>
+                      <span className="text-xs text-emerald-400 font-semibold">
+                        {featuredProducts[0]?.quantity || 8} in Stock
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             </motion.div>
           </div>
         </div>
@@ -168,7 +193,7 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. Featured Products */}
+      {/* 3. Featured Products (Distinct items, strictly non-repeated) */}
       <section className="py-20 bg-slate-50 border-t border-b border-slate-200/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-12">
@@ -188,7 +213,7 @@ const LandingPage: React.FC = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredProducts.map((product) => (
+              {(featuredProducts.length > 4 ? featuredProducts.slice(1, 5) : featuredProducts.slice(0, 4)).map((product) => (
                 <Link 
                   key={product._id} 
                   to={`/products/${product._id}`}
@@ -196,7 +221,7 @@ const LandingPage: React.FC = () => {
                 >
                   <div className="aspect-square bg-slate-100 relative overflow-hidden">
                     <img 
-                      src={product.images[0]} 
+                      src={product.images?.[0] || 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=500&auto=format&fit=crop&q=60'} 
                       alt={product.name} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
