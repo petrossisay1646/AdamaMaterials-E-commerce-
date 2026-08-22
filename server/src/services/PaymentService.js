@@ -150,7 +150,7 @@ class ChapaProvider extends PaymentProvider {
       callback_url: callbackUrl || defaultCallback,
       return_url: returnUrl,
       customization: {
-        title: 'AdaMeeshaa',
+        title: 'Revola',
         description: `Order ${order.trackingNumber || txRef}`.substring(0, 80),
       },
     };

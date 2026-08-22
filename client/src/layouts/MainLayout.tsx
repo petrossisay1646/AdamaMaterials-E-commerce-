@@ -18,6 +18,7 @@ import {
   CheckCircle2,
   Lock,
 } from 'lucide-react';
+import BrandLogo from '../components/BrandLogo';
 import api from '../services/api';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -95,22 +96,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <header className="sticky top-0 z-50 w-full bg-white/95 border-b border-slate-200 backdrop-blur-md shadow-xs relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-22 flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 font-extrabold tracking-tight group py-1">
-            <div className="relative overflow-hidden rounded-xl shadow-md border-2 border-amber-400/60 group-hover:scale-105 transition-all bg-slate-900 flex-shrink-0">
-              <img
-                src="/logo.png"
-                alt="AdaMaterials Shield Logo"
-                className="w-12 h-14 sm:w-14 sm:h-16 object-cover"
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight leading-tight">
-                Ada<span className="text-accent-600 font-black">Meeshaa</span>
-              </span>
-              <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase">
-                Gabaa Meeshaa Adamaa
-              </span>
-            </div>
+          <Link to="/" className="group py-1">
+            <BrandLogo />
           </Link>
 
           {/* Desktop Nav */}
@@ -383,25 +370,11 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <footer className="bg-slate-950 text-slate-400 py-14 border-t border-slate-850">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
-            <div className="flex items-center gap-4 font-bold text-xl tracking-tight text-white mb-4">
-              <div className="overflow-hidden rounded-2xl border-2 border-amber-400/60 shadow-xl bg-slate-900 flex-shrink-0">
-                <img
-                  src="/logo.png"
-                  alt="AdaMaterials Logo"
-                  className="w-14 h-16 sm:w-16 sm:h-20 object-cover"
-                />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-black tracking-tight text-white text-2xl sm:text-3xl leading-tight">
-                  Ada<span className="text-accent-400 font-black">Meeshaa</span>
-                </span>
-                <span className="text-xs font-semibold text-slate-400 tracking-wider uppercase mt-0.5">
-                  Adama City, Oromia, Ethiopia
-                </span>
-              </div>
+            <div className="mb-4">
+              <BrandLogo showTagline={true} />
             </div>
             <p className="text-sm text-slate-400 max-w-xs leading-relaxed">
-              Gabaa Meeshaa Adamaa — Adama's premier marketplace for reclaimed construction materials, scrap
+              Revola — The premier marketplace for reclaimed construction materials, scrap
               metals, plastics, and industrial equipment.
             </p>
           </div>
@@ -447,8 +420,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-slate-800/80 text-center text-xs text-slate-500">
-          &copy; {new Date().getFullYear()} AdaMaterials Marketplace. Developed in Ethiopia. All
-          rights reserved.
+          &copy; {new Date().getFullYear()} Revola Marketplace. All rights reserved.
         </div>
       </footer>
 

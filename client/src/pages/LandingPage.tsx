@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Search, ShieldCheck, Truck, Coins, BadgeAlert, Sparkles, CheckCircle2 } from 'lucide-react';
+import BrandLogo from '../components/BrandLogo';
 import api from '../services/api';
 
 const LandingPage: React.FC = () => {
@@ -47,11 +48,12 @@ const LandingPage: React.FC = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-slate-900/90 border border-amber-400/40 shadow-lg shadow-amber-500/10">
-              <img src="/logo.png" alt="AdaMeeshaa Shield Emblem" className="w-9 h-9 object-contain rounded-lg drop-shadow-sm" />
-              <span className="text-base font-black tracking-tight text-white">
-                Ada<span className="text-accent-400 font-black">Meeshaa</span> <span className="text-xs font-semibold text-slate-400 pl-1">• Gabaa Meeshaa Adamaa</span>
-              </span>
+            <div className="inline-flex items-center gap-2 p-1.5 pr-4 rounded-2xl bg-slate-900/90 border border-orange-500/40 shadow-lg shadow-orange-500/10">
+              <BrandLogo variant="icon" className="w-8 h-8" />
+              <div className="flex items-center gap-1.5 text-sm font-black text-white">
+                <span><span className="text-blue-400">re</span><span className="text-orange-400">vola</span></span>
+                <span className="text-xs text-slate-300 font-medium">• Every Good Thing Deserves a Second Life</span>
+              </div>
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
               Buy & Sell Usable <br />
